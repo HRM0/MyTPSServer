@@ -15,16 +15,26 @@ const app = express()
 app.use(bodyParser.json())
 app.use(cors())
 
-app.post('/chat',async (req,res) => {
-
-    const {createMyMemo } = req.body
-    
-    const completion = await openai.createChatCompletion({
-        model:"gpt-3.5-turbo",
-        messages:[{role:'user', content: createMyMemo}]
+app.get('/',async (req,res) => {
+    res.status(200).send({
+        message:"server is up"
     })
+});
 
-    res.send(completion.data.choices[0])
+app.post('/chat',async (req,res) => {
+    try {
+        const {createMyMemo } = req.body
+        
+        const completion = await openai.createChatCompletion({
+            model:"gpt-3.5-turbo",
+            messages:[{role:'user', content: createMyMemo}]
+        })
+    
+        res.send(completion.data.choices[0])
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({error})
+    }
 })
 
 const port = 8080
